@@ -42,9 +42,9 @@
       });
 
       var tractorIcon = L.icon({
-        iconUrl: 'images/tractor.png',
-        iconSize:     [24, 24],
-        iconAnchor:   [12, 12]
+        iconUrl: 'images/tractor-pin.png',
+        iconSize:     [24, 35],
+        iconAnchor:   [12, -2]
       });
 
       var map = L.map('map')
@@ -73,7 +73,7 @@
 
       function onEachFeature(feature, layer) {
         
-        var popupContent = "";
+        var popupContent = feature.geometry.coordinates;
 
         if (feature.properties) {
 
