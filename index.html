@@ -1,0 +1,107 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>LeafLet Map Example</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+      integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+      crossorigin=""/>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style type="text/css">
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      #map {
+        width: 600px;
+        height: 400px;
+      }
+    </style>
+
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+      integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+      crossorigin=""></script>
+  </head>
+
+  <body>
+
+    <div id="map"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>
+    <script>
+
+      var mapboxTiles = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWFyb25mcmV5IiwiYSI6ImNqZnEydTh2bzIwa2MzMG52ZXZjNWc0cTgifQ.MwifHhNULByjv7mae4Th-w', {
+        attribution: 'Map data <a href="https://www.opendataphilly.org/" target="_blank">OpenDataPhilly</a>'
+      });
+
+      var tractorIcon = L.icon({
+        iconUrl: 'images/tractor.png',
+        iconSize:     [24, 24],
+        iconAnchor:   [12, 12]
+      });
+
+      var map = L.map('map')
+        .addLayer(mapboxTiles)
+        .setView([39.998030, -75.170888], 12);
+        
+      var promise = $.getJSON("data/farmers-markets.geojson");
+
+      promise.then(function(data) {
+
+        var farmersMarkets = L.geoJson(data, {
+          onEachFeature: onEachFeature,
+          pointToLayer: function(feature, latlng) {
+            return L.marker(latlng, {
+              icon: tractorIcon
+            });
+          }
+        });
+
+        farmersMarkets.addTo(map);
+
+        map.fitBounds(farmersMarkets.getBounds(), {
+          padding: [50, 50]
+        });
+      });
+
+      function onEachFeature(feature, layer) {
+        
+        var popupContent = "";
+
+        if (feature.properties) {
+
+          if (feature.properties.NAME) {
+            popupContent += "<strong>Name</strong>: " + feature.properties.NAME;
+          }
+          if (feature.properties.ADDRESS) {
+            popupContent += "<br><strong>Address</strong>: " + feature.properties.ADDRESS;
+          }
+          if (feature.properties.ADDRESS_NOTES) {
+            popupContent += "<br>" + feature.properties.ADDRESS_NOTES;
+          }
+          if (feature.properties.DAY) {
+            popupContent += "<br><strong>Day</strong>: " + feature.properties.DAY;
+          }
+          if (feature.properties.TIME) {
+            popupContent += "<br><strong>Time</strong>: " + feature.properties.TIME;
+          }
+          if (feature.properties.MONTHS) {
+            popupContent += "<br><strong>Months</strong>: " + feature.properties.MONTHS;
+          }
+          if (feature.properties.MAJOR_BUS_SUBWAY_ROUTES) {
+            popupContent += "<br><strong>Major Bus & Subway Routes</strong>: " + feature.properties.MAJOR_BUS_SUBWAY_ROUTES;
+          }
+        }
+        layer.bindPopup(popupContent);
+      }
+    </script>
+
+  </body>
+</html>
